@@ -1,13 +1,13 @@
-
 import React, { useState } from 'react';
-import { Phase, ActionItemId, Status } from '../types';
+import { Phase, ActionItemId, Status, SubStep, ActionItem } from '../types';
 import ActionItemRow from './ActionItemRow';
 import Icon from './Icon';
 
 interface PhaseCardProps {
   phase: Phase;
-  onStatusChange: (phaseId: number, itemId: ActionItemId, newStatus: Status) => void;
-  onAiActionClick: (itemId: ActionItemId) => void;
+  onSubStepDetailsChange: (phaseId: number, itemId: ActionItemId, subStepId: string, details: string) => void;
+  onAiActionClick: (phaseId: number, item: ActionItem, subStep: SubStep) => void;
+  onViewDetails: (details: string) => void;
 }
 
 const PhaseIcon: React.FC<{ phaseId: number }> = ({ phaseId }) => {
@@ -20,10 +20,16 @@ const PhaseIcon: React.FC<{ phaseId: number }> = ({ phaseId }) => {
     return <Icon name={icons[phaseId]} className="w-8 h-8 text-blue-400" />;
 }
 
-const PhaseCard: React.FC<PhaseCardProps> = ({ phase, onStatusChange, onAiActionClick }) => {
+const PhaseCard: React.FC<PhaseCardProps> = ({ phase, onSubStepDetailsChange, onAiActionClick, onViewDetails }) => {
     const [isOpen, setIsOpen] = useState(phase.unlocked);
     
-    const progress = (phase.actionItems.filter(item => item.status === Status.Done).length / phase.actionItems.length) * 100;
+    const { total, completed } = phase.actionItems.reduce((acc, item) => {
+        acc.total += item.subSteps.length;
+        acc.completed += item.subSteps.filter(s => s.status === Status.Done).length;
+        return acc;
+    }, { total: 0, completed: 0 });
+
+    const progress = total > 0 ? (completed / total) * 100 : 0;
 
     const handleToggle = () => {
         if(phase.unlocked) {
@@ -59,8 +65,9 @@ const PhaseCard: React.FC<PhaseCardProps> = ({ phase, onStatusChange, onAiAction
                         <ActionItemRow
                             key={item.id}
                             item={item}
-                            onStatusChange={(newStatus) => onStatusChange(phase.id, item.id, newStatus)}
-                            onAiActionClick={() => onAiActionClick(item.id)}
+                            onSubStepDetailsChange={(subStepId, details) => onSubStepDetailsChange(phase.id, item.id, subStepId, details)}
+                            onAiActionClick={(subStep) => onAiActionClick(phase.id, item, subStep)}
+                            onViewDetails={onViewDetails}
                         />
                     ))}
                 </div>

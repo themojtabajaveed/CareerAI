@@ -1,4 +1,3 @@
-
 export enum Status {
   NotStarted = 'Not Started',
   InProgress = 'In Progress',
@@ -18,11 +17,21 @@ export type ActionItemId =
   | 'delta-4'
   | 'alerts';
 
+export type SubStepType = 'manual' | 'ai';
+
+export interface SubStep {
+  id: string;
+  title: string;
+  status: Status;
+  type: SubStepType;
+  questions?: string[];
+  details?: string;
+}
+
 export interface ActionItem {
   id: ActionItemId;
   title: string;
-  status: Status;
-  hasAiFeature?: boolean;
+  subSteps: SubStep[];
 }
 
 export interface Phase {
