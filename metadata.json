@@ -1,0 +1,5 @@
+{
+  "name": "CareerAI: Personalized Career Companion",
+  "description": "An AI-powered career platform with a personalized dashboard that steers candidates through four phases: Introspection, Exploration, Reflection, and Action. It features built-in checklists, status tracking, and AI assistance for tasks like journaling, social media post generation, and feedback analysis.",
+  "requestFramePermissions": []
+}
